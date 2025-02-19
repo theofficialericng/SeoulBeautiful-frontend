@@ -8,7 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { useAuth } from "../contexts/AuthContext"
-import { useWebSocket } from "../hooks/use-websocket"
+import { useWebSocket } from "@/hooks/use-websocket"
 
 interface Message {
   id: number;
