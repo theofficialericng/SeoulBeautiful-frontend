@@ -1,53 +1,106 @@
+// app/inbox/page.tsx
 "use client"
 
-import { useState, useEffect } from "react"
-import { useAuth } from "../contexts/AuthContext"
-import { useRouter } from "next/navigation"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
+import { useAuth } from "../contexts/AuthContext"
+import { useWebSocket } from "../hooks/use-websocket"
 
-// This would typically come from a database or API
-const initialConversations = [
-  { id: 1, with: "Jane Doe", lastMessage: "Thanks for your review!", unread: true },
-  { id: 2, with: "John Smith", lastMessage: "Could you tell me more about...", unread: false },
-  { id: 3, with: "Alice Johnson", lastMessage: "I had a similar experience.", unread: true },
-]
+interface Message {
+  id: number;
+  senderId: string;
+  receiverId: string;
+  content: string;
+  timestamp: string;
+}
+
+interface Conversation {
+  id: string;
+  with: string;
+  lastMessage: string;
+  unread: boolean;
+}
 
 export default function InboxPage() {
-  const [conversations, setConversations] = useState(initialConversations)
-  const [selectedConversation, setSelectedConversation] = useState(null)
+  const [conversations, setConversations] = useState<Conversation[]>([])
+  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null)
+  const [messages, setMessages] = useState<Message[]>([])
   const [message, setMessage] = useState("")
   const [search, setSearch] = useState("")
   const { user } = useAuth()
   const router = useRouter()
+  const { sendMessage, ws } = useWebSocket(user?.id);
 
   useEffect(() => {
     if (!user) {
       router.push("/login")
+      return;
     }
-    // In a real app, you would fetch the user's conversations here
+
+    // Fetch conversations
+    fetch(`http://localhost:8080/api/chat/conversations/${user.id}`)
+      .then(res => res.json())
+      .then(data => setConversations(data));
   }, [user, router])
 
-  const filteredConversations = conversations.filter((conv) => conv.with.toLowerCase().includes(search.toLowerCase()))
+  useEffect(() => {
+    if (!ws) return;
+  
+    ws.onmessage = (event: MessageEvent) => { // Add the MessageEvent type
+      const newMessage = JSON.parse(event.data);
+      setMessages(prev => [...prev, newMessage]);
+      
+      // Update conversation list
+      setConversations(prev => {
+        const updatedConvs = [...prev];
+        const convIndex = updatedConvs.findIndex(c => 
+          c.id === (newMessage.senderId === user?.id ? newMessage.receiverId : newMessage.senderId)
+        );
+        
+        if (convIndex > -1) {
+          updatedConvs[convIndex] = {
+            ...updatedConvs[convIndex],
+            lastMessage: newMessage.content,
+            unread: newMessage.senderId !== user?.id
+          };
+        }
+        return updatedConvs;
+      });
+    };
+  }, [ws, user]);
 
-  const handleSendMessage = (e) => {
+  useEffect(() => {
+    if (selectedConversation && user) {
+      // Fetch message history
+      fetch(`http://localhost:8080/api/chat/messages/${user.id}/${selectedConversation.id}`)
+        .then(res => res.json())
+        .then(data => setMessages(data));
+    }
+  }, [selectedConversation, user]);
+
+  const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault()
-    if (message.trim() && selectedConversation) {
-      // In a real app, you would send this message to your backend
-      console.log("Sending message:", message, "to conversation:", selectedConversation)
-      setMessage("")
-      // Update the conversation with the new message
-      setConversations(
-        conversations.map((conv) =>
-          conv.id === selectedConversation.id ? { ...conv, lastMessage: message, unread: false } : conv,
-        ),
-      )
+    if (message.trim() && selectedConversation && user) {
+      const messageData = {
+        senderId: user.id,
+        receiverId: selectedConversation.id,
+        content: message
+      };
+      
+      sendMessage(messageData);
+      setMessage("");
     }
   }
 
-  if (!user) return null // or a loading spinner
+  const filteredConversations = conversations.filter((conv) => 
+    conv.with.toLowerCase().includes(search.toLowerCase())
+  )
+
+  if (!user) return null;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -88,8 +141,24 @@ export default function InboxPage() {
             <>
               <h2 className="text-xl font-semibold mb-4">Chat with {selectedConversation.with}</h2>
               <ScrollArea className="h-[calc(100vh-350px)] mb-4">
-                {/* Chat messages would go here */}
-                <p className="text-gray-500 text-center">Start of conversation</p>
+                {messages.map((msg, index) => (
+                  <div
+                    key={index}
+                    className={`mb-2 ${
+                      msg.senderId === user.id ? 'text-right' : 'text-left'
+                    }`}
+                  >
+                    <div
+                      className={`inline-block p-2 rounded-lg ${
+                        msg.senderId === user.id
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-gray-100'
+                      }`}
+                    >
+                      {msg.content}
+                    </div>
+                  </div>
+                ))}
               </ScrollArea>
               <form onSubmit={handleSendMessage} className="flex gap-2">
                 <Input
@@ -110,4 +179,3 @@ export default function InboxPage() {
     </div>
   )
 }
-
