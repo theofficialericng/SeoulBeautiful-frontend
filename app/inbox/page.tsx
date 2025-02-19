@@ -34,7 +34,7 @@ export default function InboxPage() {
     const fetchChatHistory = async (receiverId: string) => {
       if (!receiverId) return;
       try {
-        const response = await fetch(`http://localhost:8080/api/conversations/${user.id}/${receiverId}`);
+        const response = await fetch(`http://localhost:8080/api/chat/conversations/${user.id}/${receiverId}`);
         const data = await response.json();
         setMessages(data);
       } catch (error) {
@@ -50,14 +50,13 @@ export default function InboxPage() {
 
   useEffect(() => {
     const fetchReceivers = async () => {
-      try {
-        const response = await fetch(`http://localhost:8080/api/chat/users/conversations/${user.id}`);
+        const response = await fetch(`https://localhost:8080/api/chat/conversations/${user.id}`);
         const data = await response.json();
-        console.log(data);
-        setFilteredReceivers(data);
-      } catch (error) {
-        console.error('Error fetching receivers:', error);
-      }
+        if (response.ok) {
+          setFilteredReceivers(data);
+        } else {
+          console.error('Error fetching receivers:', data);
+        }
     };
     
     fetchReceivers();
