@@ -12,7 +12,7 @@ export default function Register() {
   const [age, setAge] = useState("")
   const [gender, setGender] = useState("")
   const [address, setAddress] = useState("")
-  const { login } = useAuth()
+  const { user, login, logout } = useAuth()
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
