@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useAuth } from "../contexts/AuthContext"
 import { useRouter } from "next/navigation"
+import axios from 'axios';
 
 export default function Register() {
   const [username, setUsername] = useState("")
@@ -14,18 +15,29 @@ export default function Register() {
   const { login } = useAuth()
   const router = useRouter()
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // In a real app, you would send this data to your backend
-    login({
-      id: "1",
-      username,
-      email,
-      age: Number.parseInt(age),
-      gender,
-      address,
-    })
-    router.push("/")
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+        const response = await axios.post('https://localhost:8080/api/auth/register', {
+            username,
+            email,
+            password,
+            age: Number.parseInt(age),
+            gender,
+            address,
+        });
+        login({
+            id: response.data.id,
+            username: response.data.username,
+            email: response.data.email,
+            age: response.data.age,
+            gender: response.data.gender,
+            address: response.data.address,
+        });
+        router.push('/');
+    } catch (error) {
+        console.error('Registration failed:', error);
+    }
   }
 
   return (
@@ -120,4 +132,3 @@ export default function Register() {
     </div>
   )
 }
-
