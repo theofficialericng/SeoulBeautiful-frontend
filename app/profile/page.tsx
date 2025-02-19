@@ -12,13 +12,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import axios from "axios"
 
 export default function ProfilePage() {
-  const { user, updateUser } = useAuth()
+  const { user, login, logout } = useAuth()
   const router = useRouter()
   const [editing, setEditing] = useState(false)
   const [profileData, setProfileData] = useState({
     username: "",
     email: "",
-    age: "",
+    age: 0,
     gender: "",
     address: "",
   })
@@ -33,7 +33,7 @@ export default function ProfilePage() {
       setProfileData({
         username: user.username,
         email: user.email,
-        age: user.age.toString(),
+        age: user.age,
         gender: user.gender,
         address: user.address,
       })
