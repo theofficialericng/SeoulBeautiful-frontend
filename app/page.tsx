@@ -36,7 +36,7 @@ export default function Home() {
               <Link href={`/procedures/${procedure.toLowerCase().replace(" ", "-")}`} key={procedure} className="group">
                 <div className="relative h-64 rounded-lg overflow-hidden">
                   <Image
-                    src={`/images/${procedure.toLowerCase().replace(" ", "-")}.jpg`}
+                    src={`/images/procedures/${procedure.toLowerCase().replace(" ", "-")}.jpg`}
                     alt={procedure}
                     layout="fill"
                     objectFit="cover"

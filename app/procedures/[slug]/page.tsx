@@ -18,7 +18,7 @@ const procedures = [
     risks: ["Infection", "Bleeding", "Unsatisfactory results"],
     recovery: "Recovery typically takes 1-2 weeks, with full results visible after several months.",
     cost: "The cost ranges from $5,000 to $15,000 depending on the complexity of the procedure.",
-    image: "/images/rhinoplasty.jpg",
+    image: "/images/procedures/rhinoplasty.jpg",
     beforeAfter: ["/images/rhinoplasty-before-1.jpg", "/images/rhinoplasty-after-1.jpg"],
     faqs: [
       { question: "How long does the surgery take?", answer: "Typically 1-3 hours, depending on complexity." },

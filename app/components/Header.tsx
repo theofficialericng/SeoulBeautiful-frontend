@@ -4,6 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { Menu, X, User, Inbox } from "lucide-react"
 import { useAuth } from "../contexts/AuthContext"
+import Image from "next/image"
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -14,7 +15,13 @@ const Header = () => {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center py-4">
           <Link href="/" className="text-2xl font-bold text-gray-800">
-            Seoul Beautiful
+            
+            <Image
+              src="/images/logos/navbar.png"
+              alt="Seoul Beautiful"
+              width="150"
+              height="50"
+            />
           </Link>
           <nav className="hidden md:flex space-x-8">
             <Link href="/procedures" className="text-gray-600 hover:text-gray-800">

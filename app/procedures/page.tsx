@@ -10,7 +10,7 @@ const procedureCategories = [
       {
         name: "Rhinoplasty",
         description: "Reshape and enhance the nose for improved facial harmony.",
-        image: "/images/rhinoplasty.jpg",
+        image: "/images/procedures/rhinoplasty.jpg",
       },
       {
         name: "Facelift",
