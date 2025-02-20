@@ -9,11 +9,14 @@ import ReviewForm from "./ReviewForm"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
+import { useRouter } from "next/router"
+import { useAuth } from "../contexts/AuthContext"
 
-export default function ReviewItem({ review, onEdit, onDelete, isOwner }) {
+export default function ReviewItem({ review, onEdit, onDelete, onOpenChat }) {
   const [isEditing, setIsEditing] = useState(false)
   const [chatOpen, setChatOpen] = useState(false)
   const [message, setMessage] = useState("")
+  const { user, login, logout } = useAuth()
 
   const handleEdit = (updatedReview) => {
     onEdit(review.id, updatedReview)
@@ -22,7 +25,6 @@ export default function ReviewItem({ review, onEdit, onDelete, isOwner }) {
 
   const handleChatSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // In a real app, you would send this message to your backend
     console.log("Message sent to author:", message)
     setMessage("")
     setChatOpen(false)
@@ -64,30 +66,34 @@ export default function ReviewItem({ review, onEdit, onDelete, isOwner }) {
             </span>
           )}
         </p>
-        <div className="space-x-2">
-          <Dialog open={chatOpen} onOpenChange={setChatOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="sm">
-                <MessageCircle className="w-4 h-4 mr-2" />
-                Chat with Author
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Chat with {review.author}</DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleChatSubmit} className="space-y-4">
-                <Textarea
-                  placeholder="Type your message here..."
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  rows={5}
-                />
-                <Button type="submit">Send Message</Button>
-              </form>
-            </DialogContent>
-          </Dialog>
-          {isOwner && (
+          <div className="space-x-2">
+          {review.authorId !== user?.id && (
+            <>
+              <Dialog open={chatOpen} onOpenChange={onOpenChat}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    Chat with Author
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Chat with {review.author}</DialogTitle>
+                  </DialogHeader>
+                  <form onSubmit={handleChatSubmit} className="space-y-4">
+                    <Textarea
+                      placeholder="Type your message here..."
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      rows={5}
+                    />
+                    <Button type="submit">Send Message</Button>
+                  </form>
+                </DialogContent>
+              </Dialog>
+            </>
+          )}
+          {review.authorId === user?.id && (
             <>
               <Button onClick={() => setIsEditing(true)} variant="outline" size="sm">
                 <Edit size={16} />

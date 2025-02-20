@@ -19,6 +19,7 @@ const initialReviews = [
     clinicId: 1,
     clinicName: "Seoul Beauty Clinic",
     author: "Jane D.",
+    authorId: 1,
     rating: 5,
     comment: "Excellent results and care!",
     isVerified: true,
@@ -30,6 +31,7 @@ const initialReviews = [
     clinicId: 1,
     clinicName: "Seoul Beauty Clinic",
     author: "John S.",
+    authorId: 2,
     rating: 4,
     comment: "Very professional staff.",
     isVerified: true,
@@ -41,6 +43,7 @@ const initialReviews = [
     clinicId: 2,
     clinicName: "Gangnam Plastic Surgery",
     author: "Alice K.",
+    authorId: 3,
     rating: 5,
     comment: "Amazing experience from start to finish.",
     isVerified: false,
@@ -157,7 +160,7 @@ export default function ReviewsPage() {
       </div>
       <div className="space-y-6 mt-8">
         {filteredReviews.map((review) => (
-          <ReviewItem key={review.id} review={review} isOwner={user && user.username === review.author} />
+          <ReviewItem key={review.id} review={review} onOpenChat={(e) => router.push(`/inbox/?authorId=${review.authorId}`)}/>
         ))}
       </div>
       <div className="mt-8">

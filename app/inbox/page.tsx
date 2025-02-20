@@ -9,8 +9,8 @@ import SockJS from "sockjs-client"
 
 interface Message {
   id: number;
-  senderId: string;
-  receiverId: string;
+  senderId: number;
+  receiverId: number;
   content: string;
   timestamp: string;
 }
@@ -20,15 +20,16 @@ const sendMessageEndpoint = "/app/chat.sendMessage"
 const listenEndpoint = "/user/"
 
 export default function InboxPage() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState<Message[]>([{id: 1, senderId: "1", receiverId: "2", content: "Hello", timestamp: "2022-01-01T00:00:00.000Z"}]);
+  const [messageString, setMessageString] = useState<string>("");
   const [search, setSearch] = useState("");
   const { user , login, logout } = useAuth();
   const router = useRouter();
-  const [selectedReceiver, setSelectedReceiver] = useState({});
-  const [filteredReceivers, setFilteredReceivers] = useState([])
-  const stompClientRef = useRef<Client | null>(null);
 
+  const [selectedReceiver, setSelectedReceiver] = useState({});
+  const [filteredReceivers, setFilteredReceivers] = useState([selectedReceiver])
+
+  const stompClientRef = useRef<Client | null>(null);
   useEffect(() => {
     if (!user) {
       router.push("/login");
@@ -104,39 +105,21 @@ export default function InboxPage() {
     };
   }, [user]);
 
-  // const handleSendMessage = (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   if (message.trim() && user && selectedReceiver) {
-  //     const messageData = {
-  //       senderId: user.id,
-  //       receiverId: selectedReceiver.id,
-  //       content: message
-  //     };
-  //     const client = new Client({ brokerURL: wsEndpoint });
-  //     client.activate();
-  //     client.onConnect = () => {
-  //       client.publish({
-  //         destination: sendMessageEndpoint,
-  //         body: JSON.stringify(messageData),
-  //       });
-  //     };
-  //     setMessage("");
-  //   }
-  // }
-
   const sendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!(message.trim() && user && selectedReceiver)) {
+    if (!(messageString.trim() && user && selectedReceiver)) {
       return;
     }
     const stompClient = stompClientRef.current;
-    if (stompClient && stompClient.connected) {
-      console.log('Sending message:', message);
+    if (stompClient && stompClient.connected && selectedReceiver) {
+      const newMessage = {senderId: user.id, receiverId: selectedReceiver.id, content: messageString, timestamp: new Date().toISOString()};
+      console.log('Sending message:', newMessage);
       stompClient.publish({
         destination: sendMessageEndpoint,
-        body: message,
+        body: JSON.stringify(newMessage),
       });
-      setMessage("");
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+      setMessageString("");
     } else {
       console.error('Stomp client is not connected');
     }
@@ -220,8 +203,8 @@ export default function InboxPage() {
             <form onSubmit={sendMessage} className="flex">
               <input
                 type="text"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
+                value={messageString}
+                onChange={(e) => setMessageString(e.target.value)}
                 placeholder="Type a message..."
                 className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none"
               />
