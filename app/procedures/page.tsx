@@ -35,12 +35,12 @@ const procedureCategories = [
       {
         name: "Tummy Tuck",
         description: "Flatten the abdomen by removing excess skin and fat.",
-        image: "/images/tummy-tuck.jpg",
+        image: "/images/tummy-tuck.webp",
       },
       {
         name: "Brazilian Butt Lift",
         description: "Enhance buttock shape and size using your own fat.",
-        image: "/images/brazilian-butt-lift.jpg",
+        image: "/images/brazilian-butt-lift.webp",
       },
     ],
   },
@@ -60,7 +60,7 @@ const procedureCategories = [
       {
         name: "Laser Skin Resurfacing",
         description: "Improve skin texture and tone with advanced laser technology.",
-        image: "/images/laser-resurfacing.jpg",
+        image: "/images/laser-resurfacing.png",
       },
     ],
   },
