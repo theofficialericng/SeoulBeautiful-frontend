@@ -29,7 +29,7 @@ export default function InboxPage() {
   // Search query params for authorId and parse it to a number, then set it to receiverId
   // This is set when referred by review page
   const params = useSearchParams();
-  const receiverId = parseInt(params.get("authorId") || "-1000");
+  const receiverId = params.get("authorId") ? parseInt(params.get("authorId")) : null;
   
   const [search, setSearch] = useState("");
   const [messageString, setMessageString] = useState<string>("");
@@ -41,12 +41,13 @@ export default function InboxPage() {
 
   const stompClientRef = useRef<Client | null>(null);
 
-  if (receiverId != -1000) {
+  if (receiverId) {
     useEffect(() => {
       fetch(`https://localhost:8080/api/users/${receiverId}`)
         .then(response => response.json())
         .then(data => setSelectedReceiver(data))
-    }, [user])
+      console.log("Receiver ID:", receiverId);
+    }, [receiverId])
   }
 
   useEffect(() => {
@@ -131,7 +132,7 @@ export default function InboxPage() {
       return;
     }
     const stompClient = stompClientRef.current;
-    if (stompClient && stompClient.connected && selectedReceiver) {
+    if (stompClient && stompClient.connected && !selectedReceiver.id) {
       const newMessage = {senderId: user.id, receiverId: selectedReceiver.id, content: messageString, timestamp: new Date().toISOString()};
       console.log('Sending message:', newMessage);
       stompClient.publish({
@@ -141,7 +142,8 @@ export default function InboxPage() {
       setMessages((prevMessages) => [...prevMessages, newMessage]);
       setMessageString("");
     } else {
-      console.error('Stomp client is not connected');
+      if (!stompClient)
+        console.error('Stomp client is not connected');
     }
   }
 
