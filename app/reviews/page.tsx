@@ -24,7 +24,7 @@ const initialReviews = [
     comment: "Excellent results and care!",
     isVerified: true,
     images: ["/images/before-after-1.jpg"],
-    procedure: "Rhinoplasty",
+    procedure: "Jaw Reduction Surgery",
   },
   {
     id: 2,
@@ -35,7 +35,7 @@ const initialReviews = [
     rating: 4,
     comment: "Very professional staff.",
     isVerified: true,
-    images: [],
+    images: ["/images/before-after-2.jpg"],
     procedure: "Double Eyelid Surgery",
   },
   {
@@ -47,8 +47,8 @@ const initialReviews = [
     rating: 5,
     comment: "Amazing experience from start to finish.",
     isVerified: false,
-    images: ["/images/before-after-2.jpg", "/images/before-after-3.jpg"],
-    procedure: "Rhinoplasty",
+    images: ["/images/before-after-3.jpg", "/images/before-after-4.jpg"],
+    procedure: "Rhinoplasty, Face Lifting",
   },
 ]
 
@@ -124,7 +124,7 @@ export default function ReviewsPage() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">Customer Reviews</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <Select onValueChange={setProcedureFilter}>
+        <Select onValueChange={(value) => setProcedureFilter(value === "all" ? null : value)}>
           <SelectTrigger>
             <SelectValue placeholder="Filter by Procedure" />
           </SelectTrigger>
