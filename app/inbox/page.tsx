@@ -1,7 +1,7 @@
 // app/inbox/page.tsx
 "use client"
 
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { useAuth } from "../contexts/AuthContext"
 import { Client } from "@stomp/stompjs"
@@ -20,16 +20,35 @@ const sendMessageEndpoint = "/app/chat.sendMessage"
 const listenEndpoint = "/user/"
 
 export default function InboxPage() {
-  const [messages, setMessages] = useState<Message[]>([{id: 1, senderId: "1", receiverId: "2", content: "Hello", timestamp: "2022-01-01T00:00:00.000Z"}]);
-  const [messageString, setMessageString] = useState<string>("");
-  const [search, setSearch] = useState("");
   const { user , login, logout } = useAuth();
+  if (!user) {
+    console.error("You must be logged in to view this page");
+    return;
+  }
+  
+  // Search query params for authorId and parse it to a number, then set it to receiverId
+  // This is set when referred by review page
+  const params = useSearchParams();
+  const receiverId = parseInt(params.get("authorId") || "-1000");
+  
+  const [search, setSearch] = useState("");
+  const [messageString, setMessageString] = useState<string>("");
+  const [messages, setMessages] = useState<Message[]>([{id: 1, senderId: user?.id, receiverId: receiverId, content: "Hello", timestamp: new Date().toISOString()}]);
   const router = useRouter();
 
-  const [selectedReceiver, setSelectedReceiver] = useState({});
-  const [filteredReceivers, setFilteredReceivers] = useState([selectedReceiver])
+  const [selectedReceiver, setSelectedReceiver] = useState(null);
+  const [filteredReceivers, setFilteredReceivers] = useState([])
 
   const stompClientRef = useRef<Client | null>(null);
+
+  if (receiverId != -1000) {
+    useEffect(() => {
+      fetch(`https://localhost:8080/api/users/${receiverId}`)
+        .then(response => response.json())
+        .then(data => setSelectedReceiver(data))
+    }, [user])
+  }
+
   useEffect(() => {
     if (!user) {
       router.push("/login");
@@ -41,16 +60,17 @@ export default function InboxPage() {
       if (!receiverId) return;
       try {
         const response = await fetch(`https://localhost:8080/api/chat/conversations/${user.id}/${receiverId}`);
-        const data = await response.json();
-        setMessages(data);
+        return await response.json();
       } catch (error) {
         console.error('Error fetching chat history:', error);
       }
     };
 
-    // Example: Fetch chat history for a specific receiver (replace with actual logic)
-    if (user && selectedReceiver) {
-      fetchChatHistory(selectedReceiver.id);
+    if (user && selectedReceiver && messages.length === 1) {
+      console.log(selectedReceiver);
+      fetchChatHistory(selectedReceiver.id).then(data => {
+        setMessages(data);
+      });
     }
   }, [user, router]);
 
@@ -151,7 +171,7 @@ export default function InboxPage() {
                 <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
                 <div className="ml-3">
                   <p className="font-medium">{receiver.username}</p>
-                  <p className="text-sm text-gray-500">{messages.at(0)?.content ?? ""}</p>
+                  <p className="text-sm text-gray-500">{messages.length === 0 ? "" : messages[messages.length - 1].content}</p>
                 </div>
               </div>
             </div>

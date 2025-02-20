@@ -19,7 +19,7 @@ const initialReviews = [
     clinicId: 1,
     clinicName: "Seoul Beauty Clinic",
     author: "Jane D.",
-    authorId: 1,
+    authorId: -1,
     rating: 5,
     comment: "Excellent results and care!",
     isVerified: true,
@@ -31,7 +31,7 @@ const initialReviews = [
     clinicId: 1,
     clinicName: "Seoul Beauty Clinic",
     author: "John S.",
-    authorId: 2,
+    authorId: -2,
     rating: 4,
     comment: "Very professional staff.",
     isVerified: true,
@@ -43,7 +43,7 @@ const initialReviews = [
     clinicId: 2,
     clinicName: "Gangnam Plastic Surgery",
     author: "Alice K.",
-    authorId: 3,
+    authorId: -3,
     rating: 5,
     comment: "Amazing experience from start to finish.",
     isVerified: false,
@@ -63,7 +63,7 @@ const allClinics = [
 
 export default function ReviewsPage() {
   const [reviews, setReviews] = useState(initialReviews)
-  const { user } = useAuth()
+  const { user, login, logout } = useAuth()
   const [procedureFilter, setProcedureFilter] = useState("")
   const [clinicSearch, setClinicSearch] = useState("")
   const [clinicSuggestions, setClinicSuggestions] = useState<string[]>([])
@@ -110,6 +110,14 @@ export default function ReviewsPage() {
       title: "Review Submitted",
       description: "Your review has been successfully submitted.",
     })
+  }
+  
+  const editReview = (reviewId, review) => {
+    setReviews((prevReviews) => prevReviews.map((r) => (r.id === reviewId ? review : r)))
+  }
+
+  const deleteReview = (reviewId) => {
+    setReviews((prevReviews) => prevReviews.filter((r) => r.id !== reviewId))
   }
 
   return (
@@ -160,7 +168,7 @@ export default function ReviewsPage() {
       </div>
       <div className="space-y-6 mt-8">
         {filteredReviews.map((review) => (
-          <ReviewItem key={review.id} review={review} onOpenChat={(e) => router.push(`/inbox/?authorId=${review.authorId}`)}/>
+          <ReviewItem key={review.id} review={review} onEdit={editReview} onDelete={deleteReview} onOpenChat={(e) => router.push(`/inbox/?authorId=${review.authorId}`)}/>
         ))}
       </div>
       <div className="mt-8">
