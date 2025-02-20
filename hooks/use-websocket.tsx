@@ -8,7 +8,7 @@ export const useWebSocket = (userId: string | undefined) => {
   useEffect(() => {
     if (!userId) return;
 
-    const websocket = new WebSocket(`ws://localhost:8080/ws/chat?userId=${userId}`);
+    const websocket = new WebSocket(`ws://localhost:8080/api/app/chat.sendMessage`);
 
     websocket.onopen = () => {
       setIsConnected(true);
