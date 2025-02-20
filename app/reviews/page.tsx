@@ -50,6 +50,18 @@ const initialReviews = [
     images: ["/images/before-after-3.jpg", "/images/before-after-4.jpg"],
     procedure: "Rhinoplasty, Face Lifting",
   },
+  {
+    id: 4,
+    clinicId: 3,
+    clinicName: "K Beauty Aesthetics",
+    author: "Kim Ji Soo",
+    authorId: -4,
+    rating: 4.5,
+    comment: "Doctors were professional and understanding",
+    isVerified: false,
+    images: [],
+    procedure: "Brazilian Butt Lift",
+  },
 ]
 
 // This would typically come from a database or API

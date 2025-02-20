@@ -1,9 +1,9 @@
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { Star, Edit, Trash2, Check, MessageCircle } from "lucide-react"
 import ReviewForm from "./ReviewForm"
 import { Button } from "@/components/ui/button"
@@ -16,6 +16,7 @@ export default function ReviewItem({ review, onEdit, onDelete, onOpenChat }) {
   const [isEditing, setIsEditing] = useState(false)
   const [chatOpen, setChatOpen] = useState(false)
   const [message, setMessage] = useState("")
+  const [imageDimensions, setImageDimensions] = useState({})
   const { user, login, logout } = useAuth()
 
   const handleEdit = (updatedReview) => {
@@ -28,6 +29,60 @@ export default function ReviewItem({ review, onEdit, onDelete, onOpenChat }) {
     console.log("Message sent to author:", message)
     setMessage("")
     setChatOpen(false)
+  }
+
+  // Function to handle image load and capture dimensions
+  const handleImageLoad = (imageUrl, event) => {
+    const img = event.target
+    const { naturalWidth, naturalHeight } = img
+    
+    setImageDimensions(prev => ({
+      ...prev,
+      [imageUrl]: {
+        width: naturalWidth,
+        height: naturalHeight,
+        aspect: naturalWidth / naturalHeight
+      }
+    }))
+  }
+
+  // Calculate optimal display dimensions
+  const getDisplayDimensions = (imageUrl) => {
+    const dimensions = imageDimensions[imageUrl]
+    if (!dimensions) return { width: 96, height: 96 } // Default size (24 * 4)
+
+    const maxWidth = 400 // Maximum width for images
+    const maxHeight = 400 // Maximum height for images
+    const minWidth = 96 // Minimum width
+    const minHeight = 96 // Minimum height
+
+    let width = dimensions.width
+    let height = dimensions.height
+
+    // Scale down if larger than maximum dimensions
+    if (width > maxWidth) {
+      width = maxWidth
+      height = width / dimensions.aspect
+    }
+    if (height > maxHeight) {
+      height = maxHeight
+      width = height * dimensions.aspect
+    }
+
+    // Scale up if smaller than minimum dimensions
+    if (width < minWidth) {
+      width = minWidth
+      height = width / dimensions.aspect
+    }
+    if (height < minHeight) {
+      height = minHeight
+      width = height * dimensions.aspect
+    }
+
+    return {
+      width: Math.round(width),
+      height: Math.round(height)
+    }
   }
 
   if (isEditing) {
@@ -47,16 +102,34 @@ export default function ReviewItem({ review, onEdit, onDelete, onOpenChat }) {
         </div>
       </div>
       <p className="mb-2">{review.comment}</p>
-      <div className="flex flex-wrap gap-2 mt-2">
-        {review.images.map((image, index) => (
-          <img
-            key={index}
-            src={image || "/placeholder.svg"}
-            alt={`Review ${index + 1}`}
-            className="w-24 h-24 object-cover"
-          />
+      
+      {/* Image Gallery */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-2">
+        {review.images.map((imageUrl, index) => (
+          <div key={index} className="relative">
+            {/* Hidden image to get natural dimensions */}
+            <img
+              src={imageUrl || "/placeholder.svg"}
+              onLoad={(e) => handleImageLoad(imageUrl, e)}
+              className="hidden"
+              alt=""
+            />
+            
+            {/* Visible image with dynamic dimensions */}
+            <div className="relative rounded-lg overflow-hidden">
+              <Image
+                src={imageUrl || "/placeholder.svg"}
+                alt={`Review ${index + 1}`}
+                width={getDisplayDimensions(imageUrl).width}
+                height={getDisplayDimensions(imageUrl).height}
+                className="object-cover rounded-lg"
+                priority={index === 0}
+              />
+            </div>
+          </div>
         ))}
       </div>
+
       <div className="flex items-center justify-between mt-4">
         <p className="text-sm text-gray-500">
           - {review.author}
@@ -66,7 +139,8 @@ export default function ReviewItem({ review, onEdit, onDelete, onOpenChat }) {
             </span>
           )}
         </p>
-          <div className="space-x-2">
+        
+        <div className="space-x-2">
           {review.authorId !== user?.id && (
             <>
               <Dialog open={chatOpen} onOpenChange={onOpenChat}>
@@ -107,5 +181,5 @@ export default function ReviewItem({ review, onEdit, onDelete, onOpenChat }) {
       </div>
     </div>
   )
-}
+} 
 
