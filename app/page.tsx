@@ -23,7 +23,8 @@ export default function Home() {
         />
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <p className="text-white text-3xl font-semibold text-center px-4">
-            Experience World-Class Beauty Treatments in Korea
+          Empowering you with transparent cosmetic surgery insights,
+          <br></br> through authentic and unfiltered ex-patient connections.
           </p>
         </div>
       </section>
