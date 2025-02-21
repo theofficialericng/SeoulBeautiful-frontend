@@ -1,5 +1,13 @@
 export const initialMessages = [{ id: 1, senderId: null, receiverId: null, content: "Hello", timestamp: new Date().toISOString() }];
 
+export const authors = [
+  { id: 0, username: "CuriousUser", isVerified: false },
+  { id: 1, username: "Jane D.", isVerified: true },
+  { id: 2, username: "John S.", isVerified: true },
+  { id: 3, username: "BeautySeeker", isVerified: true },
+  { id: 4, username: "Kim Ji Soo", isVerified: false},
+]
+
 export const doctors = [
   {
     id: 1,
@@ -33,8 +41,8 @@ export const clinics = [
     website: "https://www.seoulbeautyclinic.com",
     surgeons: [doctors[0], doctors[1]],
     reviews: [
-      { id: 1, author: "Jane D.", rating: 5, comment: "Excellent results and care!" },
-      { id: 2, author: "John S.", rating: 4, comment: "Very professional and knowledgeable." },
+      { id: 1, author: authors[1], rating: 5, comment: "Excellent results and care!" },
+      { id: 2, author: authors[2], rating: 4, comment: "Very professional and knowledgeable." },
     ],
   },
   {
@@ -50,8 +58,8 @@ export const clinics = [
     website: "https://www.gangnamplasticsurgery.com",
     surgeons: [doctors[0], doctors[1]],
     reviews: [
-      { id: 1, author: "Jane D.", rating: 5, comment: "Excellent results and care!" },
-      { id: 2, author: "John S.", rating: 4, comment: "Very professional and knowledgeable." },
+      { id: 1, author: authors[1], rating: 5, comment: "Excellent results and care!" },
+      { id: 2, author: authors[2], rating: 4, comment: "Very professional and knowledgeable." },
     ],
   },
   {
@@ -67,8 +75,8 @@ export const clinics = [
     website: "https://www.k-styleaesthetics.com",
     surgeons: [doctors[0], doctors[1]],
     reviews: [
-      { id: 1, author: "Jane D.", rating: 5, comment: "Excellent results and care!" },
-      { id: 2, author: "John S.", rating: 4, comment: "Very professional and knowledgeable." },
+      { id: 1, author: authors[1], rating: 5, comment: "Excellent results and care!" },
+      { id: 2, author: authors[2], rating: 4, comment: "Very professional and knowledgeable." },
     ],
   },
 ];
@@ -110,56 +118,44 @@ export const procedureCategories = [
 ];
 
 export const initialTopics = [
-  { id: 1, title: "What to expect during rhinoplasty recovery?", author: "CuriousUser", replies: 5 },
-  { id: 2, title: "Best clinics for double eyelid surgery?", author: "BeautySeeker", replies: 8 },
+  { id: 1, title: "What to expect during rhinoplasty recovery?", author: authors[0], replies: 5 },
+  { id: 2, title: "Best clinics for double eyelid surgery?", author: authors[3], replies: 8 },
 ];
 
 export const initialReviews = [
   {
     id: 1,
-    clinicId: 1,
-    clinicName: "Seoul Beauty Clinic",
-    author: "Jane D.",
-    authorId: -1,
+    clinic: clinics[0],
+    author: authors[1],
     rating: 5,
     comment: "Excellent results and care!",
-    isVerified: true,
     images: ["/images/before-after-1.jpg"],
     procedure: "Jaw Reduction Surgery",
   },
   {
     id: 2,
-    clinicId: 1,
-    clinicName: "Seoul Beauty Clinic",
-    author: "John S.",
-    authorId: -2,
+    clinic: clinics[0],
+    author: authors[2],
     rating: 4,
     comment: "Very professional staff.",
-    isVerified: true,
     images: ["/images/before-after-2.jpg"],
     procedure: "Double Eyelid Surgery",
   },
   {
     id: 3,
-    clinicId: 2,
-    clinicName: "Gangnam Plastic Surgery",
-    author: "Alice K.",
-    authorId: -3,
+    clinic: clinics[1],
+    author: authors[3],
     rating: 5,
     comment: "Amazing experience from start to finish.",
-    isVerified: false,
     images: ["/images/before-after-3.jpg", "/images/before-after-4.jpg"],
     procedure: "Rhinoplasty, Face Lifting",
   },
   {
     id: 4,
-    clinicId: 3,
-    clinicName: "K Beauty Aesthetics",
-    author: "Kim Ji Soo",
-    authorId: -4,
+    clinic: clinics[2],
+    author: authors[4],
     rating: 4.5,
     comment: "Doctors were professional and understanding",
-    isVerified: false,
     images: [],
     procedure: "Brazilian Butt Lift",
   },

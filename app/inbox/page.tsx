@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { useAuth } from "../contexts/AuthContext"
 import assert from "assert"
-import { initialMessages } from '@/app/data';
+import { initialMessages, authors } from '@/app/data';
 
 interface Message {
   id: number;
@@ -15,11 +15,19 @@ interface Message {
   timestamp: string;
 }
 
-const wsEndpoint = "https://localhost:8080/api/ws"
-const sendMessageEndpoint = "/app/chat.sendMessage"
-const listenEndpoint = "/user/"
+function Sidebar({ receivers, selectedReceiver, setSelectedReceiver }) {
+  const { user } = useAuth();
+  const [search, setSearch] = useState("");
+  const [filteredReceivers, setFilteredReceivers] = useState(receivers);
 
-function Sidebar({ search, setSearch, filteredReceivers, selectedReceiver, setSelectedReceiver }) {
+  useEffect(() => {
+    setFilteredReceivers(
+      receivers.filter((receiver) =>
+        receiver.username.toLowerCase().includes(search.toLowerCase())
+      )
+    );
+  }, [receivers, search]);
+
   return (
     <div className="w-1/4 bg-white border-r border-gray-200">
       <div className="p-4 border-b border-gray-200">
@@ -44,7 +52,7 @@ function Sidebar({ search, setSearch, filteredReceivers, selectedReceiver, setSe
               <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
               <div className="ml-3">
                 <p className="font-medium">{receiver.username}</p>
-                <p className="text-sm text-gray-500">{messages.length === 0 ? "" : messages[messages.length - 1].content}</p>
+                <p className="text-sm text-gray-500">"Last message"</p>
               </div>
             </div>
           </div>
@@ -68,17 +76,17 @@ function ChatHeader({ selectedReceiver }) {
   );
 }
 
-function MessageList({ messages }) {
+function MessageList({ messages, userId }) {
   return (
     <div className="flex-1 overflow-y-auto p-4">
-      {messages.map((msg, index) => (
+      {messages.map((msg) => (
         <div
-          key={index}
-          className={`flex mb-4 ${msg.senderId == user?.id ? 'justify-end' : 'justify-start'
+          key={msg.timestamp}
+          className={`flex mb-4 ${msg.senderId == userId ? 'justify-end' : 'justify-start'
             }`}
         >
           <div
-            className={`max-w-xs p-3 rounded-lg ${msg.senderId == user?.id
+            className={`max-w-xs p-3 rounded-lg ${msg.senderId == userId
               ? 'bg-blue-500 text-white'
               : 'bg-gray-200'
               }`}
@@ -99,6 +107,7 @@ function MessageInput({ sendMessage }) {
 
   function handleSend(e: React.FormEvent) {
     e.preventDefault();
+    if (message.trim() === "") return;
     sendMessage(message);
     setMessage("");
   }
@@ -124,90 +133,56 @@ function MessageInput({ sendMessage }) {
   );
 }
 
-function getReceiverIdFromQueryParams() {
+function getReceiverFromQueryParams() {
   // Search query params for authorId and parse it to a number, then set it to receiverId
   // This is set when referred by review page
   const params = useSearchParams();
-  return params.get("authorId") ? parseInt(params.get("authorId")) : null;
+  const id = params.get("authorId") ? parseInt(params.get("authorId")) : null;
+  return authors.find((author) => author.id === id);
+}
+
+function fetchConversation(receiverId: number): Message[] {
+  return JSON.parse(localStorage.getItem(`conversation-${receiverId}`) || "[]");
+}
+
+function saveConversation(receiverId: number, messages: Message[]): void {
+  localStorage.setItem(`conversation-${receiverId}`, JSON.stringify(messages));
 }
 
 export default function InboxPage() {
   const { user, login, logout } = useAuth();
+  const router = useRouter();
   if (!user) {
     console.error("You must be logged in to view this page");
+    router.push("/login");
     return;
   }
 
-  const receiverId = getReceiverIdFromQueryParams();
-
-  const [search, setSearch] = useState("");
-  const [messages, setMessages] = useState(initialMessages);
-  const router = useRouter();
-
-  const [selectedReceiver, setSelectedReceiver] = useState(null);
-  const [filteredReceivers, setFilteredReceivers] = useState([])
-
-  if (receiverId) {
-    useEffect(() => {
-      fetch(`https://localhost:8080/api/users/${receiverId}`)
-        .then(response => response.json())
-        .then(data => setSelectedReceiver(data))
-      console.log("Receiver ID:", receiverId);
-    }, [receiverId])
-  }
-
+  const [selectedReceiver, setSelectedReceiver] = useState(getReceiverFromQueryParams());
+  const [messages, setMessages] = useState<Message[]>([]);
   useEffect(() => {
-    if (!user) {
-      router.push("/login");
-      return;
-    }
-
-    // Fetch initial chat history for the selected conversation
-    const fetchChatHistory = async (receiverId: string) => {
-      if (!receiverId) return;
-      try {
-        const response = await fetch(`https://localhost:8080/api/chat/conversations/${user.id}/${receiverId}`);
-        return await response.json();
-      } catch (error) {
-        console.error('Error fetching chat history:', error);
-      }
-    };
-
-    if (user && selectedReceiver && messages.length === initialMessages.length) {
-      console.log(selectedReceiver);
-      fetchChatHistory(selectedReceiver.id).then(data => {
-        setMessages(data);
-      });
-    }
-  }, [user, router]);
-
-  useEffect(() => {
-    const fetchReceivers = async () => {
-      const response = await fetch(`https://localhost:8080/api/chat/conversations/${user.id}`);
-      const data = await response.json();
-      if (response.ok) {
-        setFilteredReceivers(data);
-      } else {
-        console.error('Error fetching receivers:', data);
-      }
-    };
-
-    fetchReceivers();
-  }, [user]);
-
+    if (!selectedReceiver) return;
+    const conversation = fetchConversation(selectedReceiver.id);
+    setMessages(conversation);
+  }, [selectedReceiver])
+  
   const sendMessage = (messageString: string) => {
     assert(selectedReceiver, "Selected receiver is undefined");
-    const newMessage: Message = { senderId: user.id, receiverId: selectedReceiver.id, content: messageString, timestamp: new Date().toISOString() };
+    const newMessage: Message = { id: messages.length, senderId: user.id, receiverId: selectedReceiver.id, content: messageString, timestamp: new Date().toISOString() };
     console.log('Sending message:', newMessage);
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
+    const conversation = [...messages, newMessage];
+    saveConversation(selectedReceiver.id, conversation);
+    setMessages(conversation);
   }
 
   return (
-    <div>
-      <Sidebar search={search} setSearch={setSearch} filteredReceivers={filteredReceivers} selectedReceiver={selectedReceiver} setSelectedReceiver={setSelectedReceiver} />
-      <ChatHeader selectedReceiver={selectedReceiver} />
-      <MessageList messages={messages} />
-      <MessageInput sendMessage={sendMessage} />
+    <div className="flex h-screen bg-gray-100">
+      <Sidebar  receivers={authors} selectedReceiver={selectedReceiver} setSelectedReceiver={setSelectedReceiver} />
+      <div className="flex flex-col flex-1">
+      {selectedReceiver && <ChatHeader selectedReceiver={selectedReceiver} /> }
+      <MessageList messages={messages} userId={user.id} />
+      {selectedReceiver && <MessageInput sendMessage={sendMessage} /> }
+      </div>
     </div>
-  );
+  )
 }

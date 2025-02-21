@@ -35,7 +35,7 @@ export default function ReviewsPage() {
   const filteredReviews = reviews.filter((review) => {
     return (
       (!procedureFilter || review.procedure === procedureFilter) &&
-      (!clinicSearch || review.clinicName.toLowerCase().includes(clinicSearch.toLowerCase())) &&
+      (!clinicSearch || review.clinic.name.toLowerCase().includes(clinicSearch.toLowerCase())) &&
       (!showOnlyWithImages || review.images.length > 0)
     )
   })
@@ -120,7 +120,7 @@ export default function ReviewsPage() {
       </div>
       <div className="space-y-6 mt-8">
         {filteredReviews.map((review) => (
-          <ReviewItem key={review.id} review={review} onEdit={editReview} onDelete={deleteReview} onOpenChat={(e) => router.push(`/inbox/?authorId=${review.authorId}`)}/>
+          <ReviewItem key={review.id} review={review} onEdit={editReview} onDelete={deleteReview} onOpenChat={(e) => router.push(`/inbox/?authorId=${review.author.id}`)}/>
         ))}
       </div>
       <div className="mt-8">

@@ -92,8 +92,8 @@ export default function ReviewItem({ review, onEdit, onDelete, onOpenChat }) {
   return (
     <div className="border rounded-lg p-4">
       <div className="flex items-center justify-between mb-2">
-        <Link href={`/clinics/${review.clinicId}`} className="text-blue-600 hover:underline">
-          {review.clinicName}
+        <Link href={`/clinics/${review.clinic.id}`} className="text-blue-600 hover:underline">
+          {review.clinic.name}
         </Link>
         <div className="flex items-center">
           {[1, 2, 3, 4, 5].map((value) => (
@@ -132,8 +132,8 @@ export default function ReviewItem({ review, onEdit, onDelete, onOpenChat }) {
 
       <div className="flex items-center justify-between mt-4">
         <p className="text-sm text-gray-500">
-          - {review.author}
-          {review.isVerified && (
+          - {review.author.username}
+          {review.author.isVerified && (
             <span className="ml-2 text-green-500">
               <Check size={16} className="inline" /> Verified Patient
             </span>
@@ -141,7 +141,7 @@ export default function ReviewItem({ review, onEdit, onDelete, onOpenChat }) {
         </p>
         
         <div className="space-x-2">
-          {review.authorId !== user?.id && (
+          {review.author.id !== user?.id && (
             <>
               <Dialog open={chatOpen} onOpenChange={onOpenChat}>
                 <DialogTrigger asChild>
@@ -152,7 +152,7 @@ export default function ReviewItem({ review, onEdit, onDelete, onOpenChat }) {
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Chat with {review.author}</DialogTitle>
+                    <DialogTitle>Chat with {review.author.username}</DialogTitle>
                   </DialogHeader>
                   <form onSubmit={handleChatSubmit} className="space-y-4">
                     <Textarea
@@ -167,7 +167,7 @@ export default function ReviewItem({ review, onEdit, onDelete, onOpenChat }) {
               </Dialog>
             </>
           )}
-          {review.authorId === user?.id && (
+          {review.author.id === user?.id && (
             <>
               <Button onClick={() => setIsEditing(true)} variant="outline" size="sm">
                 <Edit size={16} />

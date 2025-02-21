@@ -140,7 +140,7 @@ export default function ClinicPage() {
           {clinic.reviews.map((review) => (
             <div key={review.id} className="border rounded-lg p-4">
               <div className="flex items-center mb-2">
-                <span className="font-semibold mr-2">{review.author}</span>
+                <span className="font-semibold mr-2">{review.author.username}</span>
                 <div className="flex">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Star
