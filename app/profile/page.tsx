@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "@/components/ui/use-toast"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import axios from "axios"
 
 export default function ProfilePage() {
   const { user, login, logout } = useAuth()
@@ -58,7 +57,7 @@ export default function ProfilePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.put('https://localhost:8080/api/user/update', profileData);
+      // const response = await axios.put('https://localhost:8080/api/user/update', profileData);
       if (newPassword && newPassword === confirmPassword) {
         // Update password logic would go here
       }
