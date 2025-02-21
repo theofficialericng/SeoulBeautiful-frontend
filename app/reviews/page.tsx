@@ -11,56 +11,11 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useRouter } from "next/navigation"
 import { toast } from "@/components/ui/use-toast"
-
-// This would typically come from a database or API
-const initialReviews = [
-  {
-    id: 1,
-    clinicId: 1,
-    clinicName: "Seoul Beauty Clinic",
-    author: "Jane D.",
-    rating: 5,
-    comment: "Excellent results and care!",
-    isVerified: true,
-    images: ["/images/before-after-1.jpg"],
-    procedure: "Rhinoplasty",
-  },
-  {
-    id: 2,
-    clinicId: 1,
-    clinicName: "Seoul Beauty Clinic",
-    author: "John S.",
-    rating: 4,
-    comment: "Very professional staff.",
-    isVerified: true,
-    images: [],
-    procedure: "Double Eyelid Surgery",
-  },
-  {
-    id: 3,
-    clinicId: 2,
-    clinicName: "Gangnam Plastic Surgery",
-    author: "Alice K.",
-    rating: 5,
-    comment: "Amazing experience from start to finish.",
-    isVerified: false,
-    images: ["/images/before-after-2.jpg", "/images/before-after-3.jpg"],
-    procedure: "Rhinoplasty",
-  },
-]
-
-// This would typically come from a database or API
-const allClinics = [
-  "Seoul Beauty Clinic",
-  "Gangnam Plastic Surgery",
-  "K-Style Aesthetics",
-  "Miracle Plastic Surgery",
-  "Dream Plastic Surgery",
-]
+import { allClinics, initialReviews } from '@/app/data';
 
 export default function ReviewsPage() {
   const [reviews, setReviews] = useState(initialReviews)
-  const { user } = useAuth()
+  const { user, login, logout } = useAuth()
   const [procedureFilter, setProcedureFilter] = useState("")
   const [clinicSearch, setClinicSearch] = useState("")
   const [clinicSuggestions, setClinicSuggestions] = useState<string[]>([])
@@ -80,7 +35,7 @@ export default function ReviewsPage() {
   const filteredReviews = reviews.filter((review) => {
     return (
       (!procedureFilter || review.procedure === procedureFilter) &&
-      (!clinicSearch || review.clinicName.toLowerCase().includes(clinicSearch.toLowerCase())) &&
+      (!clinicSearch || review.clinic.name.toLowerCase().includes(clinicSearch.toLowerCase())) &&
       (!showOnlyWithImages || review.images.length > 0)
     )
   })
@@ -108,12 +63,20 @@ export default function ReviewsPage() {
       description: "Your review has been successfully submitted.",
     })
   }
+  
+  const editReview = (reviewId, review) => {
+    setReviews((prevReviews) => prevReviews.map((r) => (r.id === reviewId ? review : r)))
+  }
+
+  const deleteReview = (reviewId) => {
+    setReviews((prevReviews) => prevReviews.filter((r) => r.id !== reviewId))
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">Customer Reviews</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <Select onValueChange={setProcedureFilter}>
+        <Select onValueChange={(value) => setProcedureFilter(value === "all" ? null : value)}>
           <SelectTrigger>
             <SelectValue placeholder="Filter by Procedure" />
           </SelectTrigger>
@@ -157,7 +120,7 @@ export default function ReviewsPage() {
       </div>
       <div className="space-y-6 mt-8">
         {filteredReviews.map((review) => (
-          <ReviewItem key={review.id} review={review} isOwner={user && user.username === review.author} />
+          <ReviewItem key={review.id} review={review} onEdit={editReview} onDelete={deleteReview} onOpenChat={(e) => router.push(`/inbox/?authorId=${review.author.id}`)}/>
         ))}
       </div>
       <div className="mt-8">

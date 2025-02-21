@@ -9,15 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-
-// This would typically come from a database or API
-const allClinics = [
-  "Seoul Beauty Clinic",
-  "Gangnam Plastic Surgery",
-  "K-Style Aesthetics",
-  "Miracle Plastic Surgery",
-  "Dream Plastic Surgery",
-]
+import { allClinics } from '@/app/data';
 
 export default function SubmitReviewPage() {
   const [clinicSearch, setClinicSearch] = useState("")
@@ -120,4 +112,3 @@ export default function SubmitReviewPage() {
     </div>
   )
 }
-

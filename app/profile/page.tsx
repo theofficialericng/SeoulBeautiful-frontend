@@ -9,15 +9,16 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "@/components/ui/use-toast"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import axios from "axios"
 
 export default function ProfilePage() {
-  const { user, updateUser } = useAuth()
+  const { user, login, logout } = useAuth()
   const router = useRouter()
   const [editing, setEditing] = useState(false)
   const [profileData, setProfileData] = useState({
     username: "",
     email: "",
-    age: "",
+    age: 0,
     gender: "",
     address: "",
   })
@@ -32,7 +33,7 @@ export default function ProfilePage() {
       setProfileData({
         username: user.username,
         email: user.email,
-        age: user.age.toString(),
+        age: user.age,
         gender: user.gender,
         address: user.address,
       })
@@ -54,14 +55,10 @@ export default function ProfilePage() {
     }
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      // In a real app, you would send this data to your backend
-      await updateUser({
-        ...profileData,
-        age: Number.parseInt(profileData.age),
-      })
+      const response = await axios.put('https://localhost:8080/api/user/update', profileData);
       if (newPassword && newPassword === confirmPassword) {
         // Update password logic would go here
       }
@@ -74,6 +71,7 @@ export default function ProfilePage() {
         description: "Your profile has been successfully updated.",
       })
     } catch (error) {
+      console.error('Error updating profile:', error);
       toast({
         title: "Error",
         description: "There was an error updating your profile. Please try again.",
@@ -188,4 +186,3 @@ export default function ProfilePage() {
     </div>
   )
 }
-

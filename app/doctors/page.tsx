@@ -6,48 +6,52 @@ import Image from "next/image"
 import { Star, MapPin } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-
-// This would typically come from a database or API
-const doctors = [
-  {
-    id: 1,
-    name: "Dr. Kim",
-    specialty: "Plastic Surgery",
-    location: "Seoul",
-    rating: 4.8,
-    photo: "/images/dr-kim.jpg",
-  },
-  {
-    id: 2,
-    name: "Dr. Lee",
-    specialty: "Dermatology",
-    location: "Busan",
-    rating: 4.5,
-    photo: "/images/dr-lee.jpg",
-  },
-  // Add more doctors here
-]
+import { doctors } from '@/app/data';
 
 export default function DoctorsPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [specialty, setSpecialty] = useState("")
   const [location, setLocation] = useState("")
   const [minRating, setMinRating] = useState(0)
+  const [filteredDoctors, setFilteredDoctors] = useState(doctors)
 
-  const filteredDoctors = doctors.filter(
-    (doctor) =>
-      doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      (specialty === "" || doctor.specialty === specialty) &&
-      (location === "" || doctor.location === location) &&
-      doctor.rating >= minRating,
-  )
+  const handleFilter = () => {
+    const filtered = doctors.filter(
+      (doctor) =>
+        doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        (specialty === "" || doctor.specialty === specialty) &&
+        (location === "" || doctor.location === location) &&
+        doctor.rating >= minRating,
+    )
+    setFilteredDoctors(filtered)
+  }
+
+  const handleSearchTermChange = (e) => {
+    setSearchTerm(e.target.value)
+    handleFilter()
+  }
+
+  const handleSpecialtyChange = (value) => {
+    setSpecialty(value)
+    handleFilter()
+  }
+
+  const handleLocationChange = (value) => {
+    setLocation(value)
+    handleFilter()
+  }
+
+  const handleMinRatingChange = (value) => {
+    setMinRating(Number(value))
+    handleFilter()
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">Find a Doctor</h1>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <Input placeholder="Search doctors..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-        <Select onValueChange={setSpecialty}>
+        <Input placeholder="Search doctors..." value={searchTerm} onChange={handleSearchTermChange} />
+        <Select onValueChange={handleSpecialtyChange}>
           <SelectTrigger>
             <SelectValue placeholder="Specialty" />
           </SelectTrigger>
@@ -58,7 +62,7 @@ export default function DoctorsPage() {
             {/* Add more specialties */}
           </SelectContent>
         </Select>
-        <Select onValueChange={setLocation}>
+        <Select onValueChange={handleLocationChange}>
           <SelectTrigger>
             <SelectValue placeholder="Location" />
           </SelectTrigger>
@@ -69,7 +73,7 @@ export default function DoctorsPage() {
             {/* Add more locations */}
           </SelectContent>
         </Select>
-        <Select onValueChange={(value) => setMinRating(Number(value))}>
+        <Select onValueChange={handleMinRatingChange}>
           <SelectTrigger>
             <SelectValue placeholder="Minimum Rating" />
           </SelectTrigger>
@@ -111,4 +115,3 @@ export default function DoctorsPage() {
     </div>
   )
 }
-

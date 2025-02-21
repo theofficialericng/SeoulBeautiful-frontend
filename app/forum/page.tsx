@@ -2,13 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-
-// This would typically come from a database or API
-const initialTopics = [
-  { id: 1, title: "What to expect during rhinoplasty recovery?", author: "CuriousUser", replies: 5 },
-  { id: 2, title: "Best clinics for double eyelid surgery?", author: "BeautySeeker", replies: 8 },
-  { id: 3, title: "How to choose the right surgeon?", author: "FirstTimer", replies: 12 },
-]
+import { initialTopics } from '@/app/data';
 
 export default function ForumPage() {
   const [topics, setTopics] = useState(initialTopics)
@@ -55,4 +49,3 @@ export default function ForumPage() {
     </div>
   )
 }
-
