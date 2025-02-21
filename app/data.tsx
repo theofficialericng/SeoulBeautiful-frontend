@@ -1,11 +1,21 @@
 export const initialMessages = [{ id: 1, senderId: null, receiverId: null, content: "Hello", timestamp: new Date().toISOString() }];
 
-export const authors = [
-  { id: 0, username: "CuriousUser", isVerified: false },
-  { id: 1, username: "Jane D.", isVerified: true },
-  { id: 2, username: "John S.", isVerified: true },
-  { id: 3, username: "BeautySeeker", isVerified: true },
-  { id: 4, username: "Kim Ji Soo", isVerified: false},
+export type User = {
+  id: number
+  username: string
+  isVerified: boolean
+  email: string
+  age: number
+  gender: string
+  address: string
+}
+
+export const authors: User[] = [
+  { id: 0, username: "CuriousUser", isVerified: false, email: "curious.user@gmail.com", age: 25, gender: "Male", address: "Seoul" },
+  { id: 1, username: "Jane D.", isVerified: true, email: "jane.d@gmail.com", age: 30, gender: "Female", address: "New York" },
+  { id: 2, username: "John S.", isVerified: true, email: "john.s@gmail.com", age: 35, gender: "Male", address: "London" },
+  { id: 3, username: "BeautySeeker", isVerified: true, email: "beauty.seeker@gmail.com", age: 40, gender: "Female", address: "Paris" },
+  { id: 4, username: "Kim Ji Soo", isVerified: false, email: "kim.ji.soo@gmail.com", age: 30, gender: "Female", address: "Busan" },
 ]
 
 export const doctors = [

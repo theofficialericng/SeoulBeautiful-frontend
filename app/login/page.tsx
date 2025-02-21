@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useAuth } from "../contexts/AuthContext"
 import { useRouter } from "next/navigation"
-import axios from 'axios';
+import { authors } from '@/app/data';
 
 export default function Login() {
   const [email, setEmail] = useState("")
@@ -14,18 +14,12 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-        const response = await axios.post('https://localhost:8080/api/auth/login', {
-            email,
-            password,
-        });
-        login({
-            id: response.data.id,
-            username: response.data.username,
-            email: response.data.email,
-            age: response.data.age,
-            gender: response.data.gender,
-            address: response.data.address,
-        });
+        const user = authors.find((a) => a.email === email)
+        if (!user) {
+            alert("Invalid credentials");
+            return;
+        }
+        login(user)
         router.push('/');
     } catch (error) {
         console.error('Login failed:', error);

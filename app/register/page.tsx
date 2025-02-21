@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useAuth } from "../contexts/AuthContext"
 import { useRouter } from "next/navigation"
-import axios from 'axios';
+import { authors, User } from '@/app/data';
 
 export default function Register() {
   const [username, setUsername] = useState("")
@@ -15,25 +15,45 @@ export default function Register() {
   const { user, login, logout } = useAuth()
   const router = useRouter()
 
+  function saveUser(user: User) {
+    authors.push(user);
+  }
+  
+  function getAllUsers() {
+    return authors;
+  }
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-        const response = await axios.post('https://localhost:8080/api/auth/register', {
+        const user = {
+            id: authors.length + 1,
+            isVerified: false,
             username,
             email,
             password,
             age: Number.parseInt(age),
             gender,
             address,
-        });
-        login({
-            id: response.data.id,
-            username: response.data.username,
-            email: response.data.email,
-            age: response.data.age,
-            gender: response.data.gender,
-            address: response.data.address,
-        });
+        };
+        
+        const existingUsers = getAllUsers();
+        if (existingUsers.find((u) => u.username === username)) {
+            alert("Username already taken");
+            return;
+        }
+        
+        const cleanUser = {
+            id: existingUsers.length + 1,
+            isVerified: false,
+            username: user.username,
+            email: user.email,
+            age: user.age,
+            gender: user.gender,
+            address: user.address,
+        }
+        saveUser(cleanUser);
+        login(cleanUser);
         router.push('/');
     } catch (error) {
         console.error('Registration failed:', error);

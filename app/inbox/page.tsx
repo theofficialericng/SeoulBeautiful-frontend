@@ -52,7 +52,7 @@ function Sidebar({ receivers, selectedReceiver, setSelectedReceiver }) {
               <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
               <div className="ml-3">
                 <p className="font-medium">{receiver.username}</p>
-                <p className="text-sm text-gray-500">"Last message"</p>
+                <p className="text-sm text-gray-500">Last message</p>
               </div>
             </div>
           </div>
