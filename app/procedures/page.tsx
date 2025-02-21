@@ -2,69 +2,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-
-const procedureCategories = [
-  {
-    name: "Facial Procedures",
-    procedures: [
-      {
-        name: "Rhinoplasty",
-        description: "Reshape and enhance the nose for improved facial harmony.",
-        image: "/images/rhinoplasty.jpg",
-      },
-      {
-        name: "Facelift",
-        description: "Reduce signs of aging and restore a more youthful appearance.",
-        image: "/images/facelift.jpg",
-      },
-      {
-        name: "Eyelid Surgery",
-        description: "Create a more open, alert look with double eyelid surgery.",
-        image: "/images/eyelid-surgery.jpg",
-      },
-    ],
-  },
-  {
-    name: "Body Contouring",
-    procedures: [
-      {
-        name: "Liposuction",
-        description: "Remove stubborn fat deposits for a more sculpted body shape.",
-        image: "/images/liposuction.jpg",
-      },
-      {
-        name: "Tummy Tuck",
-        description: "Flatten the abdomen by removing excess skin and fat.",
-        image: "/images/tummy-tuck.webp",
-      },
-      {
-        name: "Brazilian Butt Lift",
-        description: "Enhance buttock shape and size using your own fat.",
-        image: "/images/brazilian-butt-lift.webp",
-      },
-    ],
-  },
-  {
-    name: "Non-Surgical Treatments",
-    procedures: [
-      {
-        name: "Botox",
-        description: "Reduce wrinkles and fine lines for a smoother complexion.",
-        image: "/images/botox.jpg",
-      },
-      {
-        name: "Dermal Fillers",
-        description: "Add volume and contour to various areas of the face.",
-        image: "/images/dermal-fillers.jpg",
-      },
-      {
-        name: "Laser Skin Resurfacing",
-        description: "Improve skin texture and tone with advanced laser technology.",
-        image: "/images/laser-resurfacing.png",
-      },
-    ],
-  },
-]
+import { procedureCategories } from '@/app/data';
 
 export default function ProceduresPage() {
   return (
@@ -104,4 +42,3 @@ export default function ProceduresPage() {
     </div>
   )
 }
-

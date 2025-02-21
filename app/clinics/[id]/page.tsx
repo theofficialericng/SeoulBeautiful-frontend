@@ -5,40 +5,18 @@ import type React from "react"
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { notFound } from "next/navigation"
+import { notFound, useParams } from "next/navigation"
 import { useAuth } from "../../contexts/AuthContext"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 import { Star, MapPin } from "lucide-react"
+import { clinics } from '@/app/data';
 
-// This would typically come from a database or API
-const clinics = [
-  {
-    id: 1,
-    name: "Seoul Beauty Clinic",
-    description: "A leading clinic in Seoul specializing in facial plastic surgery.",
-    image: "/images/clinic1.jpg",
-    website: "https://www.seoulbeautyclinic.com",
-    rating: 4.5,
-    reviewCount: 120,
-    location: "Gangnam, Seoul",
-    mapUrl: "https://goo.gl/maps/exampleSeoulBeautyClinic",
-    surgeons: [
-      { id: 1, name: "Dr. Kim", specialty: "Rhinoplasty" },
-      { id: 2, name: "Dr. Lee", specialty: "Eyelid Surgery" },
-    ],
-    reviews: [
-      { id: 1, author: "Jane D.", rating: 5, comment: "Excellent results and care!" },
-      { id: 2, author: "John S.", rating: 4, comment: "Very professional staff." },
-    ],
-  },
-  // Add more clinics here
-]
-
-export default function ClinicPage({ params }: { params: { id: string } }) {
+export default function ClinicPage() {
+  const { id } = useParams<{ id: string }>();
   const { user } = useAuth()
-  const clinic = clinics.find((c) => c.id === Number.parseInt(params.id))
+  const clinic = clinics.find((c) => c.id === Number(id))
   const [inquiryOpen, setInquiryOpen] = useState(false)
   const [inquiry, setInquiry] = useState("")
 

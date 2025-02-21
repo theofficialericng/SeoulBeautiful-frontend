@@ -11,67 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useRouter } from "next/navigation"
 import { toast } from "@/components/ui/use-toast"
-
-// This would typically come from a database or API
-const initialReviews = [
-  {
-    id: 1,
-    clinicId: 1,
-    clinicName: "Seoul Beauty Clinic",
-    author: "Jane D.",
-    authorId: -1,
-    rating: 5,
-    comment: "Excellent results and care!",
-    isVerified: true,
-    images: ["/images/before-after-1.jpg"],
-    procedure: "Jaw Reduction Surgery",
-  },
-  {
-    id: 2,
-    clinicId: 1,
-    clinicName: "Seoul Beauty Clinic",
-    author: "John S.",
-    authorId: -2,
-    rating: 4,
-    comment: "Very professional staff.",
-    isVerified: true,
-    images: ["/images/before-after-2.jpg"],
-    procedure: "Double Eyelid Surgery",
-  },
-  {
-    id: 3,
-    clinicId: 2,
-    clinicName: "Gangnam Plastic Surgery",
-    author: "Alice K.",
-    authorId: -3,
-    rating: 5,
-    comment: "Amazing experience from start to finish.",
-    isVerified: false,
-    images: ["/images/before-after-3.jpg", "/images/before-after-4.jpg"],
-    procedure: "Rhinoplasty, Face Lifting",
-  },
-  {
-    id: 4,
-    clinicId: 3,
-    clinicName: "K Beauty Aesthetics",
-    author: "Kim Ji Soo",
-    authorId: -4,
-    rating: 4.5,
-    comment: "Doctors were professional and understanding",
-    isVerified: false,
-    images: [],
-    procedure: "Brazilian Butt Lift",
-  },
-]
-
-// This would typically come from a database or API
-const allClinics = [
-  "Seoul Beauty Clinic",
-  "Gangnam Plastic Surgery",
-  "K-Style Aesthetics",
-  "Miracle Plastic Surgery",
-  "Dream Plastic Surgery",
-]
+import { allClinics, initialReviews } from '@/app/data';
 
 export default function ReviewsPage() {
   const [reviews, setReviews] = useState(initialReviews)

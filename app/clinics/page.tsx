@@ -7,41 +7,7 @@ import { Star, MapPin, Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-
-// This would typically come from a database or API
-const clinics = [
-  {
-    id: 1,
-    name: "Seoul Beauty Clinic",
-    image: "/images/clinic1.jpg",
-    rating: 4.5,
-    reviewCount: 120,
-    location: "Gangnam, Seoul",
-    procedures: ["Rhinoplasty", "Double Eyelid Surgery", "Facial Contouring"],
-    mapUrl: "https://goo.gl/maps/exampleSeoulBeautyClinic",
-  },
-  {
-    id: 2,
-    name: "Gangnam Plastic Surgery",
-    image: "/images/clinic2.jpg",
-    rating: 4.8,
-    reviewCount: 250,
-    location: "Apgujeong, Seoul",
-    procedures: ["Breast Augmentation", "Liposuction", "Rhinoplasty"],
-    mapUrl: "https://goo.gl/maps/exampleGangnamPlasticSurgery",
-  },
-  {
-    id: 3,
-    name: "K-Style Aesthetics",
-    image: "/images/clinic3.jpg",
-    rating: 4.2,
-    reviewCount: 80,
-    location: "Busan",
-    procedures: ["Facial Contouring", "Body Contouring", "Skin Treatments"],
-    mapUrl: "https://goo.gl/maps/exampleKStyleAesthetics",
-  },
-  // Add more clinics as needed
-]
+import { clinics } from '@/app/data';
 
 export default function ClinicsPage() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -153,4 +119,3 @@ export default function ClinicsPage() {
     </div>
   )
 }
-

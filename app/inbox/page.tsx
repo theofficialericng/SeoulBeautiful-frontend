@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { useAuth } from "../contexts/AuthContext"
 import assert from "assert"
+import { initialMessages } from '@/app/data';
 
 interface Message {
   id: number;
@@ -140,7 +141,7 @@ export default function InboxPage() {
   const receiverId = getReceiverIdFromQueryParams();
 
   const [search, setSearch] = useState("");
-  const [messages, setMessages] = useState<Message[]>([{ id: 1, senderId: user?.id, receiverId: receiverId, content: "Hello", timestamp: new Date().toISOString() }]);
+  const [messages, setMessages] = useState(initialMessages);
   const router = useRouter();
 
   const [selectedReceiver, setSelectedReceiver] = useState(null);
@@ -172,7 +173,7 @@ export default function InboxPage() {
       }
     };
 
-    if (user && selectedReceiver && messages.length === 1) {
+    if (user && selectedReceiver && messages.length === initialMessages.length) {
       console.log(selectedReceiver);
       fetchChatHistory(selectedReceiver.id).then(data => {
         setMessages(data);
