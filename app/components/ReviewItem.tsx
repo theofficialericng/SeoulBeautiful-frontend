@@ -4,7 +4,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { Star, Edit, Trash2, Check, MessageCircle } from "lucide-react"
+import { Star, Edit, Trash2, Check, MessageCircle, Video  } from "lucide-react"
 import ReviewForm from "./ReviewForm"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -164,6 +164,19 @@ export default function ReviewItem({ review, onEdit, onDelete, onOpenChat }) {
                     <Button type="submit">Send Message</Button>
                   </form>
                 </DialogContent>
+              </Dialog>
+
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => alert("This feature is in development. Stay tuned!")}
+                  >
+                    <Video className="w-4 h-4 mr-2" />
+                    Schedule Call With Author
+                  </Button>
+                </DialogTrigger>
               </Dialog>
             </>
           )}
