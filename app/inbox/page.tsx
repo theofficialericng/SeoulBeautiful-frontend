@@ -94,14 +94,22 @@ function MessageList({ messages }) {
   );
 }
 
-function MessageInput({ messageString, setMessageString, sendMessage }) {
+function MessageInput({ sendMessage }) {
+  const [message, setMessage] = useState("");
+
+  function handleSend(e: React.FormEvent) {
+    e.preventDefault();
+    sendMessage(message);
+    setMessage("");
+  }
+
   return (
     <div className="p-4 bg-white border-t border-gray-200">
-      <form onSubmit={sendMessage} className="flex">
+      <form onSubmit={handleSend} className="flex">
         <input
           type="text"
-          value={messageString}
-          onChange={(e) => setMessageString(e.target.value)}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
           placeholder="Type a message..."
           className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none"
         />
@@ -129,7 +137,6 @@ export default function InboxPage() {
   const receiverId = params.get("authorId") ? parseInt(params.get("authorId")) : null;
 
   const [search, setSearch] = useState("");
-  const [messageString, setMessageString] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([{ id: 1, senderId: user?.id, receiverId: receiverId, content: "Hello", timestamp: new Date().toISOString() }]);
   const router = useRouter();
 
@@ -222,8 +229,7 @@ export default function InboxPage() {
     };
   }, [user]);
 
-  const sendMessage = (e: React.FormEvent) => {
-    e.preventDefault();
+  const sendMessage = (messageString: string) => {
     if (!(messageString.trim() && user && selectedReceiver)) {
       return;
     }
@@ -248,7 +254,7 @@ export default function InboxPage() {
       <Sidebar search={search} setSearch={setSearch} filteredReceivers={filteredReceivers} selectedReceiver={selectedReceiver} setSelectedReceiver={setSelectedReceiver} />
       <ChatHeader selectedReceiver={selectedReceiver} />
       <MessageList messages={messages} />
-      <MessageInput messageString={messageString} setMessageString={setMessageString} sendMessage={sendMessage} />
+      <MessageInput sendMessage={sendMessage} />
     </div>
   );
 }
