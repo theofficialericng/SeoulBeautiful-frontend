@@ -6,8 +6,10 @@ import { useRouter } from "next/navigation"
 import { authors } from '@/app/data';
 
 export default function Login() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  // const [email, setEmail] = useState("")
+  // const [password, setPassword] = useState("")
+  const [email, setEmail] = useState("curious.user@gmail.com");  // Preset email
+  const [password, setPassword] = useState("Poop1234"); // Preset password
   const { login } = useAuth()
   const router = useRouter()
 
@@ -37,7 +39,7 @@ export default function Login() {
           <input
             type="email"
             id="email"
-            value="curious.user@gmail.com" // {email}
+            value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
             className="w-full px-3 py-2 border rounded"
@@ -50,7 +52,7 @@ export default function Login() {
           <input
             type="password"
             id="password"
-            value="123456"//{password}
+            value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
             className="w-full px-3 py-2 border rounded"
