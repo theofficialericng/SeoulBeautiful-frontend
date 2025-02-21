@@ -2,16 +2,24 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { initialTopics } from '@/app/data';
+import { authors, initialTopics } from '@/app/data';
+import { useAuth } from "../contexts/AuthContext";
 
 export default function ForumPage() {
   const [topics, setTopics] = useState(initialTopics)
   const [newTopic, setNewTopic] = useState("")
+  const { user } = useAuth();
+  const realUser = authors.find((a) => a.id === user?.id);
+  
+  if (!realUser) {
+    console.error("You must be logged in to view this page");
+    return;
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (newTopic.trim()) {
-      setTopics([{ id: topics.length + 1, title: newTopic, author: "CurrentUser", replies: 0 }, ...topics])
+      setTopics([{ id: topics.length + 1, title: newTopic, author: realUser, replies: 0 }, ...topics])
       setNewTopic("")
     }
   }
@@ -41,7 +49,7 @@ export default function ForumPage() {
               {topic.title}
             </Link>
             <p className="text-sm text-gray-500">
-              Posted by {topic.author} | {topic.replies} replies
+              Posted by {topic.author.username} | {topic.replies} replies
             </p>
           </div>
         ))}

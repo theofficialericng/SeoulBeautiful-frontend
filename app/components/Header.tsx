@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import Link from "next/link"
 import { Menu, X, User, Inbox } from "lucide-react"
 import { useAuth } from "../contexts/AuthContext"

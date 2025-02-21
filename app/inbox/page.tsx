@@ -1,11 +1,12 @@
 // app/inbox/page.tsx
 "use client"
 
-import { useRouter, useSearchParams } from "next/navigation"
-import { useEffect, useRef, useState } from "react"
+import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation"
+import { useEffect, useState } from "react"
 import { useAuth } from "../contexts/AuthContext"
 import assert from "assert"
-import { initialMessages, authors } from '@/app/data';
+import { authors } from '@/app/data';
+import { Suspense } from "react";
 
 interface Message {
   id: number;
@@ -15,18 +16,17 @@ interface Message {
   timestamp: string;
 }
 
-function Sidebar({ receivers, selectedReceiver, setSelectedReceiver }) {
-  const { user } = useAuth();
+function Sidebar({ selectedReceiver, setSelectedReceiver }) {
   const [search, setSearch] = useState("");
-  const [filteredReceivers, setFilteredReceivers] = useState(receivers);
-
+  const [filteredReceivers, setFilteredReceivers] = useState([...authors]);
+  
   useEffect(() => {
     setFilteredReceivers(
-      receivers.filter((receiver) =>
+      authors.filter((receiver) =>
         receiver.username.toLowerCase().includes(search.toLowerCase())
       )
     );
-  }, [receivers, search]);
+  }, [authors, search]);
 
   return (
     <div className="w-1/4 bg-white border-r border-gray-200">
@@ -62,13 +62,13 @@ function Sidebar({ receivers, selectedReceiver, setSelectedReceiver }) {
   );
 }
 
-function ChatHeader({ selectedReceiver }) {
+function ChatHeader({ username }) {
   return (
     <div className="p-4 bg-white border-b border-gray-200">
       <div className="flex items-center">
         <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
         <div className="ml-3">
-          <p className="font-medium">{selectedReceiver?.username}</p>
+          <p className="font-medium">{username}</p>
           <p className="text-sm text-gray-500">Online</p>
         </div>
       </div>
@@ -136,9 +136,8 @@ function MessageInput({ sendMessage }) {
 function getReceiverFromQueryParams() {
   // Search query params for authorId and parse it to a number, then set it to receiverId
   // This is set when referred by review page
-  const params = useSearchParams();
-  const id = params.get("authorId") ? parseInt(params.get("authorId")) : null;
-  return authors.find((author) => author.id === id);
+  const authorId = useSearchParams().get("authorId");
+  return authors.find((author) => author.id === Number(authorId));
 }
 
 function fetchConversation(receiverId: number): Message[] {
@@ -150,13 +149,16 @@ function saveConversation(receiverId: number, messages: Message[]): void {
 }
 
 export default function InboxPage() {
-  const { user, login, logout } = useAuth();
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <InboxPageContent />
+    </Suspense>
+  );
+}
+
+function InboxPageContent() {
+  const { user } = useAuth();
   const router = useRouter();
-  if (!user) {
-    console.error("You must be logged in to view this page");
-    router.push("/login");
-    return;
-  }
 
   const [selectedReceiver, setSelectedReceiver] = useState(getReceiverFromQueryParams());
   const [messages, setMessages] = useState<Message[]>([]);
@@ -165,6 +167,12 @@ export default function InboxPage() {
     const conversation = fetchConversation(selectedReceiver.id);
     setMessages(conversation);
   }, [selectedReceiver])
+
+  if (!user) {
+    console.error("You must be logged in to view this page");
+    router.push("/login");
+    return;
+  }
   
   const sendMessage = (messageString: string) => {
     assert(selectedReceiver, "Selected receiver is undefined");
@@ -177,11 +185,11 @@ export default function InboxPage() {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <Sidebar  receivers={authors} selectedReceiver={selectedReceiver} setSelectedReceiver={setSelectedReceiver} />
+      <Sidebar selectedReceiver={selectedReceiver} setSelectedReceiver={setSelectedReceiver} />
       <div className="flex flex-col flex-1">
-      {selectedReceiver && <ChatHeader selectedReceiver={selectedReceiver} /> }
+      {selectedReceiver ? <ChatHeader username={selectedReceiver.username} /> : <ChatHeader username="Select a chat" /> }
       <MessageList messages={messages} userId={user.id} />
-      {selectedReceiver && <MessageInput sendMessage={sendMessage} /> }
+      {selectedReceiver ? <MessageInput sendMessage={sendMessage} /> : <div/>}
       </div>
     </div>
   )
