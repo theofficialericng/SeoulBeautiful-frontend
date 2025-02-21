@@ -52,9 +52,9 @@ const Header = () => {
                 <Link href="/login" className="text-gray-600 hover:text-gray-800">
                   Login
                 </Link>
-                <Link href="/register" className="text-gray-600 hover:text-gray-800">
+                {/* <Link href="/register" className="text-gray-600 hover:text-gray-800">
                   Register
-                </Link>
+                </Link> */}
               </>
             )}
           </nav>
@@ -96,9 +96,9 @@ const Header = () => {
                 <Link href="/login" className="text-gray-600 hover:text-gray-800">
                   Login
                 </Link>
-                <Link href="/register" className="text-gray-600 hover:text-gray-800">
+                {/* <Link href="/register" className="text-gray-600 hover:text-gray-800">
                   Register
-                </Link>
+                </Link> */}
               </>
             )}
           </nav>

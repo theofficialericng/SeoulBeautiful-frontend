@@ -37,7 +37,7 @@ export default function Login() {
           <input
             type="email"
             id="email"
-            value={email}
+            value="curious.user@gmail.com" // {email}
             onChange={(e) => setEmail(e.target.value)}
             required
             className="w-full px-3 py-2 border rounded"
@@ -50,7 +50,7 @@ export default function Login() {
           <input
             type="password"
             id="password"
-            value={password}
+            value="123456"//{password}
             onChange={(e) => setPassword(e.target.value)}
             required
             className="w-full px-3 py-2 border rounded"
