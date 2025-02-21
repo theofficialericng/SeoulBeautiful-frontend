@@ -4,8 +4,7 @@
 import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { useAuth } from "../contexts/AuthContext"
-import { Client } from "@stomp/stompjs"
-import SockJS from "sockjs-client"
+import assert from "assert"
 
 interface Message {
   id: number;
@@ -124,6 +123,13 @@ function MessageInput({ sendMessage }) {
   );
 }
 
+function getReceiverIdFromQueryParams() {
+  // Search query params for authorId and parse it to a number, then set it to receiverId
+  // This is set when referred by review page
+  const params = useSearchParams();
+  return params.get("authorId") ? parseInt(params.get("authorId")) : null;
+}
+
 export default function InboxPage() {
   const { user, login, logout } = useAuth();
   if (!user) {
@@ -131,10 +137,7 @@ export default function InboxPage() {
     return;
   }
 
-  // Search query params for authorId and parse it to a number, then set it to receiverId
-  // This is set when referred by review page
-  const params = useSearchParams();
-  const receiverId = params.get("authorId") ? parseInt(params.get("authorId")) : null;
+  const receiverId = getReceiverIdFromQueryParams();
 
   const [search, setSearch] = useState("");
   const [messages, setMessages] = useState<Message[]>([{ id: 1, senderId: user?.id, receiverId: receiverId, content: "Hello", timestamp: new Date().toISOString() }]);
@@ -142,8 +145,6 @@ export default function InboxPage() {
 
   const [selectedReceiver, setSelectedReceiver] = useState(null);
   const [filteredReceivers, setFilteredReceivers] = useState([])
-
-  const stompClientRef = useRef<Client | null>(null);
 
   if (receiverId) {
     useEffect(() => {
@@ -193,60 +194,11 @@ export default function InboxPage() {
     fetchReceivers();
   }, [user]);
 
-  useEffect(() => {
-    const socket = new SockJS(wsEndpoint);
-    const client = new Client({
-      webSocketFactory: () => socket,
-      onConnect: () => {
-        console.log('Connected to WebSocket');
-        client.subscribe(listenEndpoint + user?.id, (message) => {
-          console.log("Received message:", message.body);
-          const newMessage = JSON.parse(message.body);
-          setMessages((prevMessages) => [...prevMessages, newMessage]);
-        });
-      },
-      onDisconnect: () => {
-        console.log('Disconnected from WebSocket');
-      },
-      debug: (str) => {
-        console.log(str);
-      },
-    });
-    client.onStompError = (frame) => {
-      console.log('Broker reported error: ' + frame.headers['message']);
-      console.log('Additional information: ' + frame.headers['exception']);
-    };
-
-    client.onWebSocketError = (error) => {
-      console.log('WebSocket error: ' + error.type);
-    };
-
-    client.activate();
-    stompClientRef.current = client;
-
-    return () => {
-      client.deactivate();
-    };
-  }, [user]);
-
   const sendMessage = (messageString: string) => {
-    if (!(messageString.trim() && user && selectedReceiver)) {
-      return;
-    }
-    const stompClient = stompClientRef.current;
-    if (stompClient && stompClient.connected && !selectedReceiver.id) {
-      const newMessage = { senderId: user.id, receiverId: selectedReceiver.id, content: messageString, timestamp: new Date().toISOString() };
-      console.log('Sending message:', newMessage);
-      stompClient.publish({
-        destination: sendMessageEndpoint,
-        body: JSON.stringify(newMessage),
-      });
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
-      setMessageString("");
-    } else {
-      if (!stompClient)
-        console.error('Stomp client is not connected');
-    }
+    assert(selectedReceiver, "Selected receiver is undefined");
+    const newMessage: Message = { senderId: user.id, receiverId: selectedReceiver.id, content: messageString, timestamp: new Date().toISOString() };
+    console.log('Sending message:', newMessage);
+    setMessages((prevMessages) => [...prevMessages, newMessage]);
   }
 
   return (
