@@ -57,9 +57,6 @@ const Header = () => {
                 </Link> */}
               </>
             )}
-            <Link href="/endTask" className="text-gray-600 hover:text-gray-800">
-              End Task
-            </Link>
           </nav>
           <div className="md:hidden">
             <button onClick={() => setIsMenuOpen(!isMenuOpen)}>
