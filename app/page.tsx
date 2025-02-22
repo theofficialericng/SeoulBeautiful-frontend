@@ -6,12 +6,12 @@ import FeaturedClinics from "./components/FeaturedClinics"
 export default function Home() {
   return (
     <div>
-      <section className="hero py-16 bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+      {/* <section className="hero py-16 bg-gradient-to-r from-blue-500 to-purple-600 text-white">
         <div className="container mx-auto px-4">
           <h1 className="text-4xl font-bold text-center mb-8">Discover Korean Beauty Transformations</h1>
           <SearchBar />
         </div>
-      </section>
+      </section> */}
 
       <section className="full-width-image relative h-96">
         <Image
