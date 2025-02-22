@@ -39,10 +39,10 @@ const Header = () => {
                   <Inbox className="inline-block mr-1" size={18} />
                   Inbox
                 </Link>
-                <Link href="/profile" className="text-gray-600 hover:text-gray-800">
+                {/* <Link href="/profile" className="text-gray-600 hover:text-gray-800">
                   <User className="inline-block mr-1" size={18} />
                   Profile
-                </Link>
+                </Link> */}
                 <button onClick={logout} className="text-gray-600 hover:text-gray-800">
                   Logout
                 </button>
@@ -57,6 +57,9 @@ const Header = () => {
                 </Link> */}
               </>
             )}
+            <Link href="/endTask" className="text-gray-600 hover:text-gray-800">
+              End Task
+            </Link>
           </nav>
           <div className="md:hidden">
             <button onClick={() => setIsMenuOpen(!isMenuOpen)}>
@@ -83,10 +86,10 @@ const Header = () => {
                   <Inbox className="inline-block mr-1" size={18} />
                   Inbox
                 </Link>
-                <Link href="/profile" className="text-gray-600 hover:text-gray-800">
+                {/* <Link href="/profile" className="text-gray-600 hover:text-gray-800">
                   <User className="inline-block mr-1" size={18} />
                   Profile
-                </Link>
+                </Link> */}
                 <button onClick={logout} className="text-gray-600 hover:text-gray-800">
                   Logout
                 </button>
